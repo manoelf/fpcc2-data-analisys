@@ -1,0 +1,104 @@
+---
+title: "Aula 5: EDA - Part 2: um exemplo maior e mais comentado"
+output: html_notebook
+---
+
+
+
+```{r, error=FALSE, warning=FALSE}
+install.packages("tidyverse")
+install.packages("here")
+install.packages("dplyr")
+
+library(tidyverse)
+library(here)
+library(dplyr)
+theme_set(theme_bw())
+```
+
+#Exploracao de clima de Joao Pessoa e Campina Grande
+
+Os dados estao disponveis em tempo.inmet.gov.br
+
+Sao dados metereologicos de Campina Grande e Joao Pessoa
+
+Criar a tabela a partir do csv e dos dados
+Lendoo scv...
+```{r}
+#Usar sempre read_csv pois há algumas facilidades. Nuc ca usar read.csv
+clima = read_csv(here("data/clima_cg_jp-semanal.csv"), col_types = cols(
+    cidade = col_character(),
+    semana = col_datetime(format = ""),
+    tmedia = col_double(),
+    tmax = col_double(),
+    tmin = col_double(),
+    chuva = col_double()
+))
+```
+
+
+dando uma olhada no que temos de colunas
+```{r}
+glimpse(clima)
+```
+
+
+Quantas medicoes de cada cidade?
+```{r}
+clima %>%
+  count(cidade)
+```
+Vamos reduzir os valores para apenas o ano 2000 para melhor visualizar
+
+```{r}
+clima = clima %>% 
+  slice(grep("^2000", semana))
+```
+
+
+A cidade é quente? o que é quente? 
+O que diz isso é a temperatura máxima?
+Como se comparam as temperaturas médias das duas cidades?
+(As perguntas sao mais se algo varia, ou se exitesm valores repetidos, tipicos, comuns... )
+
+```{r}
+clima %>%
+  ggplot(mapping = aes(x = cidade, y = tmedia)) +
+  geom_point()
+```
+Percebemos que em Campina grande as faixas medias sao menores e faixa de valores variam entre cidades. 
+Conclusao: a temperatura media de valores vairaram em uma faixa maior de valores em campina grande do que em Joao Pessoa.
+
+DICAS: Como melhorar a visualizacao em estética
+
+Definindo labels
+Mudar o alpha para ver melhor os pontos (Transparencia)
+Substituir o ponto para evitar sobreposicao com o jitter para ter melhor leitura
+```{r}
+clima %>%
+  ggplot(mapping = aes(y = cidade, x = tmedia)) +
+  geom_jitter(height = .1, alpha = .6, color = "coral") +
+  labs(
+    y = "",
+    x = "Temperatua Média Semana (C)"
+  )
+```
+
+Ao criar a melhoria ajuda mais na visualizacao para poder melhor enxergar vairacao, nao é apenas estetica mais liberdade
+
+Algumas observacoes:
+Padroes:
+  Posicoes dos valores (temperatura media)
+  Variacao (Faixa de valores dos dados)
+  Espalhamento / Concentracao dos pontos
+  Pontos Extremos (Outliers (Pode ter vários significasod, entao tomar cuidado ao usar essa palavra))
+  
+
+```{r}
+clima %>%
+  ggplot(mapping = aes(y = cidade, x = chuva)) +
+  geom_jitter(height = .1, color = "steelblue", alpha = .5)
+  
+```
+
+Os valores entre temperatura e chuva sao bem differentes. O espalhamento é diferente, na temperatura é mais uniforme, ja na chuva se concentra no valor minimo de chuva
