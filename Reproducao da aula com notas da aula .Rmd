@@ -1,0 +1,98 @@
+---
+title: "EDA nos dados de personagens de StarWars"
+output: html_notebook
+---
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+```
+
+
+# Anotacoes de aula
+  
+  Tema: Técnicas de análise explanatorida de dados
+  
+  Ex.: Saber se remedio x é mais eficente que remédio y
+
+Processo inicial é checar os dados e entender o que sao esses dados. Esse conjunto de dados é chamado de análise explanatória, para poder entender qual sera o uso. Assim, exploramos os dados para saber como se comporta em linhas gerais.
+
+Em uma outra situacao, temos dados e queremos explorar para poder fazer perguntas interessantes e descubrir algo. Por exemplo, o spotiy abriu a api e permitu baixar as informacoes sobre as músicas. Daí explorar esses dados e fazer descobertas.
+
+
+Será explorado os dados do Star wars
+
+
+Carregando os dados e examinando o que temos para cada personagens.
+Assim, podemos ter uma noção dos dados que temos, os explorando.
+
+Olhar apenas nas tableas é difícil de encontrar padrões.
+(NA = dado desconhecido, faltante, não existe)
+```{r}
+glimpse(starwars)
+```
+
+Algo interessante, existe várias especies em starwars. 
+Olhando categorias, vamos contar as especies. Uma representação mais fácil. Se ordernar será ainda mais fácil de visualizar. 
+Assim, temos as especies mais comuns de starwars. 
+
+```{r}
+starwars %>% 
+  count(species, sort = TRUE)
+```
+
+Se quisermos filtar e sabermos quem sao os wookies, e limitando as colunas.
+
+```{r}
+starwars %>%
+  select(name, species, gender) %>%
+  
+  
+```
+
+
+Se quisermos saber sobre a altura dos personagens e tentar ver padroes nesse atributo. Faremos visualizacao em grafos por que ajuda muito a vizualizar os padores, e é mais eficaz que tabelas.
+
+DICA: tudo começa com a visualizacao dos dados, por isso plotamos um simples gráfico, isso facilita a visualização.
+
+```{r}
+starwars %>%
+  ggplot(mapping = aes(x = "Personagens", y = height)) +
+  geom_point()
+```
+
+Para sabermos quais as alturas que estamos faltando. Vendo isso, temos o conhecimento que tem uma lista de personagens que nao tem altura e podemos pensar a respeito do impacto que isso pode ter.
+
+```{r}
+starwars %>%
+  filter(is.na(height))
+```
+
+
+Se quisermos compara as alturas dos personagens em differentes especies
+
+
+```{r}
+starwars %>%
+  ggplot(mapping = aes(y = reorder(species, height), x = height)) +
+  geom_point()
+```
+Cada ponto é um personagem. Da pra ver que tem varios humanos; tem um alto que é Querman... Ordenando fica melhor ainda a visualização. Esses padroes vao nos dando entendimentos sobre os dados e vao gerando novas perguntas e podendo até mostrar limitacoes nos dados.
+
+
+Se quisermos olhar os pesos dos personagens. Vemos a distribuicao de valores de uma variável e nesse caso é bem consentrado e percebemos um personagem que tem massa muito maior que os outros. Disperatando assim a dúvida de quem é esse personagem. Além disso, temos varios NA e  podemos ver quem sao e levantar perguntas sobres isso.
+
+
+DICA: É interessante ir criando o log das perguntas que vao surgindo
+
+```{r}
+starwars %>%
+  ggplot(mapping = aes(x = mass, y = "")) +
+  geom_point()
+```
+
+Com isso, podemos exergar alguns pontos: 
+  Sensibilizar a exploracao de dados
+  Utilizacao de técnicas para entender dados 
+  Visualizar os valores dos atributos para analizar sua distribuicao
+  
+Esse processo gera entendimento a respeito dos dados e muitas outras perguntas. Assim, nos dando confiaca e nos instigando a responder perguntas que surgem durante a exploracao dos dados.
