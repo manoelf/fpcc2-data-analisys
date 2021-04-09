@@ -26,7 +26,7 @@ Criar a tabela a partir do csv e dos dados
 Lendoo scv...
 ```{r}
 #Usar sempre read_csv pois há algumas facilidades. Nuc ca usar read.csv
-clima = read_csv(here("data/clima_cg_jp-semanal.csv"), col_types = cols(
+clima_tudo = read_csv(here("data/clima_cg_jp-semanal.csv"), col_types = cols(
     cidade = col_character(),
     semana = col_datetime(format = ""),
     tmedia = col_double(),
@@ -51,7 +51,7 @@ clima %>%
 Vamos reduzir os valores para apenas o ano 2000 para melhor visualizar
 
 ```{r}
-clima = clima %>% 
+clima = clima_tudo %>% 
   slice(grep("^2000", semana))
 ```
 
@@ -102,3 +102,58 @@ clima %>%
 ```
 
 Os valores entre temperatura e chuva sao bem differentes. O espalhamento é diferente, na temperatura é mais uniforme, ja na chuva se concentra no valor minimo de chuva
+
+
+Criando um histograma
+
+(bin: dividindo os dados nessa largura)
+Isso mostra onde está a concentracao de pontos de chuva, e a medida que muda o valor do bin será entendido melhor a distribuicao dos pontos. Para ver melhor separamos por cidade.
+```{r}
+clima %>%
+  ggplot(aes(x = chuva)) +
+  facet_wrap(~ cidade, ncol = 1) +
+  geom_histogram(binwidth = 10, color = "black", fill = "steelblue", boundary = 0)
+```
+
+Podemos ver o número de semanas que chove menos de 10ml é bem grande.
+
+
+```{r}
+clima %>%
+  ggplot(aes(x = tmedia)) +
+  facet_wrap( ~ cidade, ncol = 1) +
+  geom_histogram(binwidth = .5, fill = "coral", color = "black")
+```
+
+
+Podemos comparar, ja que o histograma possibilita uma melhor visualizacao, a distribuicao da temperatura difere entre as cidades.
+
+Pontos que podem ser observados
+
+SIMETRIA / ASSIMETRIA
+CAUDA
+
+Caso estivesse separado por meses poderiamos ver um sumário utilizando o seguinte código. Ou sejam ver a distrobuicao mes a mes, e se também quisersemos poderia ter usado a variável ano.
+
+clima_tudo %>%
+  filter(cidade == "Campina Grande", !is.na(semana)) %>%
+  ggplot(aes(x = tmedia)) +
+  facet_wrap(~ mes) +
+  geom_histogram(binwidth = .5, fill = "coral", color = "black")
+
+
+
+Como estimar a probabilidade de um determinado valor acontecer em uma variável. E criar uma visualizacao.
+
+clima_tudo %>%
+  filter(cidade == "Campina Grande", !is.na(semana)) %>%
+  ggplot(aes(x = tmedia)) +
+  facet_wrap(~ mes) +
+  geom_density( fill = "coral", color = "black")
+
+Criar uma estatistica suavizada para visualizar distribuicao, permitindo comparacao entre as diferente distribuicoes.
+
+
+
+
+
